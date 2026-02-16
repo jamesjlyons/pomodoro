@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import * as Tone from 'tone';
 import { motion, AnimatePresence } from 'framer-motion';
 import NotificationControls from 'components/NotificationControls';
+import { TextMorph } from './TextMorph';
 import * as Switch from '@radix-ui/react-switch';
 import * as Toast from '@radix-ui/react-toast';
 import * as Slider from '@radix-ui/react-slider';
@@ -818,7 +819,7 @@ export default function Pomodoro() {
                   </g>
                 </svg>
               )}
-              {!settingsOpen && ' Settings'}
+              <TextMorph>{settingsOpen ? ' Close' : ' Settings'}</TextMorph>
 
               {settingsOpen && (
                 <svg
@@ -837,7 +838,6 @@ export default function Pomodoro() {
                   />
                 </svg>
               )}
-              {settingsOpen && ' Close'}
             </motion.button>
           </Popover.Trigger>
           <Popover.Portal>
