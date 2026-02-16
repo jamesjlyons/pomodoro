@@ -64,6 +64,12 @@ a {
   box-sizing: border-box;
 }
 
+@supports (corner-shape: squircle) {
+  * {
+    corner-shape: squircle;
+  }
+}
+
 .timer {
   font-variant-numeric: tabular-nums;
 }
