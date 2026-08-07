@@ -32,7 +32,6 @@ export default function Pomodoro() {
   const [sessionType, setSessionType] = useState('work');
   const [timerRunning, setTimerRunning] = useState(false);
   const [sound, setSound] = useState(true);
-  const [prevSessionType, setPrevSessionType] = useState('work');
   const [newSession, setNewSession] = useState(true);
   const [notifEnabled, setNotifEnabled] = useState<boolean>(true);
   const [toastContent, setToastContent] = useState('');
@@ -51,6 +50,7 @@ export default function Pomodoro() {
 
   const timerWorkerRef = useRef<Worker | null>();
   const toastTimeRef = useRef(0);
+  const previousSessionTypeRef = useRef(sessionType);
 
   // const plausible = usePlausible();
   const op = useOpenPanel();
@@ -254,59 +254,49 @@ export default function Pomodoro() {
   ]);
 
   useEffect(() => {
-    // sound and notificasion functions
-    //create a synth and connect it to the main output (your speakers)
-    const synth = new Tone.Synth().toDestination();
-    //  play passed sound parameters if sound is enabled
-    const playSound = async (note: string, duration: string, when: any) => {
-      if (sound) {
-        await Tone.start();
-        synth.triggerAttackRelease(note, duration, when);
-      }
-    };
-
-    const playSoundForSessionType = (sessionType: String) => {
-      if (sessionType === 'work') {
-        // playSound('C4', '8n', Tone.now());
-        // playSound('F4', '8n', Tone.now() + 0.15);
-        // playSound('E4', '8n', Tone.now() + 0.3);
-        const player = new Tone.Player('/sounds/Alert 5.m4a').toDestination();
-        // play as soon as the buffer is loaded
-        player.autostart = true;
-      } else if (sessionType === 'shortBreak') {
-        // playSound('C4', '8n', Tone.now());
-        // playSound('A4', '8n', Tone.now() + 0.15);
-        // playSound('B4', '8n', Tone.now() + 0.3);
-        const player = new Tone.Player('/sounds/Alert 1.m4a').toDestination();
-        // play as soon as the buffer is loaded
-        player.autostart = true;
-      } else if (sessionType === 'longBreak') {
-        // playSound('C4', '8n', Tone.now());
-        // playSound('E4', '8n', Tone.now() + 0.15);
-        // playSound('G4', '8n', Tone.now() + 0.3);
-        // playSound('B4', '8n', Tone.now() + 0.45);
-        const player = new Tone.Player('/sounds/Success 2.m4a').toDestination();
-        // play as soon as the buffer is loaded
-        player.autostart = true;
-      }
-    };
-
-    const notifyForSessionType = (sessionType: String) => {
-      if (sessionType === 'work') {
-        spawnNotification('Pomodo', 'Work time');
-      } else if (sessionType === 'shortBreak') {
-        spawnNotification('Pomodo', 'Break time');
-      } else if (sessionType === 'longBreak') {
-        spawnNotification('Pomodo', 'Long break time');
-      }
-    };
-
-    if (sessionType !== prevSessionType) {
-      playSoundForSessionType(sessionType);
-      notifyForSessionType(sessionType);
-      setPrevSessionType(sessionType);
+    if (sessionType === previousSessionTypeRef.current) {
+      return;
     }
-  }, [sound, sessionType, prevSessionType]);
+
+    previousSessionTypeRef.current = sessionType;
+
+    let soundPath: string | null = null;
+    if (sessionType === 'work') {
+      soundPath = '/sounds/Alert 5.m4a';
+      spawnNotification('Pomodo', 'Work time');
+    } else if (sessionType === 'shortBreak') {
+      soundPath = '/sounds/Alert 1.m4a';
+      spawnNotification('Pomodo', 'Break time');
+    } else if (sessionType === 'longBreak') {
+      soundPath = '/sounds/Success 2.m4a';
+      spawnNotification('Pomodo', 'Long break time');
+    }
+
+    if (!sound || !soundPath) {
+      return;
+    }
+
+    const player = new Tone.Player(soundPath).toDestination();
+    const disposePlayer = () => {
+      if (!player.disposed) {
+        player.dispose();
+      }
+    };
+
+    // Let Tone finish its onstop bookkeeping before disconnecting the player.
+    player.onstop = () => window.setTimeout(disposePlayer, 0);
+    player.autostart = true;
+
+    return () => {
+      if (player.disposed) {
+        return;
+      }
+
+      player.onstop = () => undefined;
+      player.stop();
+      disposePlayer();
+    };
+  }, [notifEnabled, sessionType, sound]);
 
   useEffect(() => {
     // timer functions
@@ -389,25 +379,37 @@ export default function Pomodoro() {
   }, [timerRunning]);
 
   useEffect(() => {
+    if (!brownNoise) {
+      noiseVolume.current = null;
+      return;
+    }
+
     const noise = new Tone.Noise('brown');
-    noiseVolume.current = new Tone.Volume(bnVolume).toDestination();
-    noise.connect(noiseVolume.current);
+    const volume = new Tone.Volume(bnVolume).toDestination();
+    noiseVolume.current = volume;
+    noise.connect(volume);
+    let disposed = false;
 
     async function startNoise() {
       await Tone.start();
-      noise.start();
+      if (!disposed) {
+        noise.start();
+      }
     }
 
-    if (brownNoise) {
-      startNoise();
-    } else {
-      noise.stop();
-    }
+    void startNoise();
 
     return () => {
+      disposed = true;
       noise.stop();
+      noise.dispose();
+      volume.dispose();
+
+      if (noiseVolume.current === volume) {
+        noiseVolume.current = null;
+      }
     };
-  }, [brownNoise, noiseVolume]);
+  }, [brownNoise]);
 
   function handleVolumeChange(newVolume: number) {
     setBnVolume(newVolume);
