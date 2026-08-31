@@ -39,6 +39,7 @@ function HomePage() {
         <link rel="apple-touch-icon" sizes="512x512" href="/icons/ios/512.png" />
         <link rel="apple-touch-icon" sizes="1024x1024" href="/icons/ios/1024.png" />
 
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/png" sizes="512x512" href="/icons/ios/512.png" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icons/ios/192.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/ios/32.png" />
