@@ -16,7 +16,7 @@ function HomePage() {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=yes, viewport-fit=cover"
         />
         <meta name="description" content="⏲️" />
-        <link rel="icon" href="/icons/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" />
 
         <meta name="application-name" content="Pomodoro" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,15 +32,19 @@ function HomePage() {
         <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" /> */}
         <meta name="theme-color" content="#000000" />
 
-        <link rel="apple-touch-icon" href="/icons/72.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="/icons/152.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons/180.png" />
-        <link rel="apple-touch-icon" sizes="167x167" href="/icons/167.png" />
+        <link rel="apple-touch-icon" href="/icons/ios/180.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/ios/152.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/ios/167.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/ios/180.png" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/icons/ios/512.png" />
+        <link rel="apple-touch-icon" sizes="1024x1024" href="/icons/ios/1024.png" />
 
-        <link rel="icon" type="image/png" sizes="32x32" href="/icons/32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icons/16.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icons/ios/512.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/ios/192.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/ios/32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/ios/16.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="shortcut icon" href="/icons/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon.ico" />
 
         {/* <meta name="twitter:card" content="summary" />
         <meta name="twitter:url" content="https://yourdomain.com" />
@@ -58,7 +62,7 @@ function HomePage() {
         <meta property="og:url" content="https://pomodoro.jameslyons.design/" />
         <meta
           property="og:image"
-          content="https://pomodoro.jameslyons.design/icons/apple-touch-icon.png"
+          content="https://pomodoro.jameslyons.design/icons/ios/512.png"
         />
       </Head>
       {/* <Script src="/timer-worker.js" strategy="worker" /> */}
